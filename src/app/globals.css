@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-jungle: #1B4332;
+  --color-tea: #95D5B2;
+  --color-ocean: #1D3557;
+  --color-sand: #F1FAEE;
+  --color-gold: #E9C46A;
+}
+
+:root {
+  --background: #F1FAEE;
+  --foreground: #1D3557;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: sans-serif;
+}
+
+/* Custom Glassmorphism Utility - Updated for v4 */
+.glass {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+html {
+  scroll-behavior: smooth;
+  /* Adjust the 5rem to match your navbar height (h-20 is 5rem) */
+  scroll-padding-top: 5rem;
+}
