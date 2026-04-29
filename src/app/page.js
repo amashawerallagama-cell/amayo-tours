@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { useState, useEffect, useRef } from 'react'; 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, MessageCircle, ArrowRight, Star, Loader2, X, ChevronLeft, ChevronRight, CloudSun } from 'lucide-react'; 
+import { MapPin, Phone, MessageCircle, ArrowRight, Star, Loader2, X, ChevronLeft, ChevronRight, CloudSun, Send, Instagram, Twitter, Compass, Wind, Map as MapIcon } from 'lucide-react'; 
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import PackageCard from '@/components/PackageCard';
@@ -67,17 +67,60 @@ const hotspots = [
 ];
 
 const allTours = [
-  { title: "Kandy Cultural Tour", duration: "10 Hours", price: "$45", category: "Hill Country", image: "temple.jpeg", rating: 4.8, isBestSeller: true, highlights: ["Temple of Tooth Relic", "Royal Botanical Gardens", "Dance Show"] },
-  { title: "Anuradhapura Heritage", duration: "1 Day", price: "$95", category: "Adventure", image: "anuradhapura.jpeg", rating: 4.9, highlights: ["Sacred Bodhi Tree", "Ruwanwelisaya", "Isurumuniya Temple"] },
-  { title: "Nuwara Eliya Highlands", duration: "1 Day", price: "$75", category: "Hill Country", image: "nuwaraeliya.jpeg", rating: 4.7, highlights: ["Tea Factory", "Gregory Lake", "Post Office"] },
-  { title: "Galle Fort & Coastal", duration: "1 Day", price: "$90", category: "Beach", image: "galle.jpeg", rating: 4.9, isBestSeller: true, highlights: ["Galle Fort Walk", "Stilt Fishing", "Turtle Hatchery"] },
-  { title: "Kitulgala Rafting", duration: "1 Day", price: "$60", category: "Adventure", image: "kithulgala.jpeg", rating: 4.6, highlights: ["Rafting", "Confidence Jumps", "Jungle Lunch"] },
-  { title: "Sigiriya Lion Rock", duration: "1 Day", price: "$85", category: "Adventure", image: "sigiriya.jpeg", rating: 5.0, isBestSeller: true, highlights: ["Lion's Rock Hike", "Dambulla Caves", "Village Safari"] }
+  { 
+    title: "Kandy Cultural Heritage", 
+    category: "Hill Country", 
+    image: "temple.jpeg", 
+    rating: 4.8, 
+    highlights: ["Tooth Relic Temple", "Botanical Garden", "Ambuluwawa Tower"],
+    fullDetails: "Explore the last royal capital of Sri Lanka. Visit the historical Dalada Maligawa (Temple of the Tooth), stroll through the Royal Botanical Garden Peradeniya, and witness the stunning 360-degree views from Ambuluwawa Tower. Experience Kandyan cultural events, the bustling market, and local craftsmanship including Batik, Silk, Gems, and Wood carvings."
+  },
+  { 
+    title: "Ancient Cities & Fortresses", 
+    category: "Adventure", 
+    image: "sigiriya.jpeg", 
+    rating: 4.9, 
+    highlights: ["Sigiriya Lion Rock", "Anuradhapura Ruins", "Polonnaruwa"],
+    fullDetails: "Journey through the Cultural Triangle. Ascend the majestic Sigiriya Lion Rock and Pidurangala. In Anuradhapura, visit the sacred Atamasthana, Ruwanwelisaya, and Sri Maha Bodhi. Discover the ruins of Polonnaruwa, the Dambulla Cave Temple, and enjoy an authentic Herbal Village tour with traditional massages."
+  },
+  { 
+    title: "Highland Tea & Scenic Ella", 
+    category: "Hill Country", 
+    image: "nuwaraeliya.jpeg", 
+    rating: 4.7, 
+    highlights: ["N'eliya to Ella Train", "Nine Arch Bridge", "Tea Factory"],
+    fullDetails: "Witness the breathtaking landscapes of Nuwara Eliya, the 'Little England' of Sri Lanka. Tour active tea factories and estates, visit majestic waterfalls, and take the world-famous scenic train ride to Ella. Explore the iconic Nine Arch Bridge, Little Adam's Peak, and hidden nature walks."
+  },
+  { 
+    title: "Southern Coastal Escape", 
+    category: "Beach", 
+    image: "galle.jpeg", 
+    rating: 4.9, 
+    highlights: ["Galle Fort", "Unawatuna Beach", "Turtle Farm"],
+    fullDetails: "Discover the colonial charm of the UNESCO-listed Galle Fort. Relax at Unawatuna Beach, witness traditional stilt fishing, and visit a Turtle Hatchery. This region is perfect for sunset lovers and those seeking a blend of history and tropical leisure."
+  },
+  { 
+    title: "Trincomalee Marine Life", 
+    category: "Beach", 
+    image: "trinco.jpeg", 
+    rating: 4.8, 
+    highlights: ["Pigeon Island", "Nilaveli Beach", "Koneshwaram Kovil"],
+    fullDetails: "Escape to the pristine East Coast. Dive or snorkel at Pigeon Island, relax on the white sands of Nilaveli Beach, and visit the cliffside Koneshwaram Kovil. This tour offers world-class whale watching and some of the clearest waters in the Indian Ocean."
+  },
+  { 
+    title: "Wildlife & Nature Safari", 
+    category: "Adventure", 
+    image: "kithulgala.jpeg", 
+    rating: 5.0, 
+    highlights: ["Elephant Orphanage", "Yala Safari", "River Rafting"],
+    fullDetails: "Get close to nature. Visit the Pinnawala Elephant Orphanage for bathing and feeding sessions. Experience a thrilling Leopard safari in Yala National Park, or go White Water Rafting in the rainforests of Kitulgala."
+  }
 ];
 
 export default function Home() {
   const [filter, setFilter] = useState("All");
   const [activeSpot, setActiveSpot] = useState(hotspots[2]); 
+  const [selectedTour, setSelectedTour] = useState(null); 
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false); 
   const [isLoading, setIsLoading] = useState(true);
@@ -128,7 +171,7 @@ export default function Home() {
             <Navbar />
             <Hero />
             
-            {/* FLEET SECTION - Optimized for Mobile */}
+            {/* FLEET SECTION */}
             <section className="h-[450px] lg:h-[600px] relative z-10 overflow-hidden bg-[#021f14] border-b border-white/5">
               <div className="h-full w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center lg:justify-between px-6">
                 <div className="w-full lg:w-1/3 mb-10 lg:mb-0 text-center lg:text-left z-20">
@@ -149,113 +192,154 @@ export default function Home() {
                 </div>
               </div>
             </section>
+
+            {/* DECORATIVE DIVIDER */}
             <div className="bg-[#021f14] py-12 flex items-center justify-center">
-    <div className="flex items-center w-full max-w-4xl px-6">
-      <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
-      <div className="mx-4 rotate-45 w-2 h-2 border border-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]"></div>
-      <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
-    </div>
-  </div>
+              <div className="flex items-center w-full max-w-4xl px-6">
+                <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
+                <div className="mx-4 rotate-45 w-2 h-2 border border-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]"></div>
+                <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
+              </div>
+            </div>
 
             {/* ABOUT SECTION */}
             <section id="about" className="py-24 px-6 bg-white relative z-20">
-                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
-                  <div className="w-full lg:w-1/2">
-                    <FadeInSection>
-                      <div className="rounded-[40px] overflow-hidden shadow-2xl border border-black/5 group">
-                        <img src="beauty.jpg" alt="About" className="w-full h-[400px] md:h-[600px] object-cover transition-transform duration-700 group-hover:scale-105" />
-                      </div>
-                    </FadeInSection>
-                  </div>
-                  <div className="w-full lg:w-1/2 space-y-6">
-                    <FadeInSection delay={0.2}>
-                      <h2 className="text-5xl md:text-6xl font-bold text-[#021f14] leading-[1.1] font-['Playfair_Display']">The Spirit of <span className="text-emerald-700 italic">Kandy</span></h2>
-                      <p className="text-[#021f14]/80 leading-relaxed text-lg">
-                        <span className="text-gold font-extrabold">Amayo Tours</span> connects you to the soul of the island. We provide more than just transport—we provide memories, guiding you to secret turquoise bays and mist-covered tea hills.
-                      </p>
-                      <div className="grid grid-cols-3 gap-4 border-t border-slate-100 pt-8">
-                        <StatBlockDark value="100%" label="Local" />
-                        <StatBlockDark value="24/7" label="Support" />
-                        <StatBlockDark value="5.0" label="Rating" />
-                      </div>
-                    </FadeInSection>
-                  </div>
-                </div>
-                
-            </section>
-
-  <div className="bg-[#021f14] w-full overflow-hidden leading-[0] rotate-180">
-    <svg className="relative block w-[calc(100%+1.3px)] h-[50px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-      <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
-            fill="rgba(255,255,255,0.03)">
-      </path>
-    </svg>
-  </div>
-
-            {/* MAP SECTION - Performance Adjusted */}
-            <section id="map" className="py-24 px-6 relative z-10 bg-[#021f14]">
-                <div className="max-w-7xl mx-auto">
-                    <FadeInSection>
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl font-bold text-white font-['Playfair_Display']">Select Your <span className="text-gold">Waypoint</span></h2>
-                            <p className="text-gold/40 text-[10px] uppercase tracking-[0.3em] font-black mt-4">Tap pins to explore</p>
-                        </div>
-                    </FadeInSection>
-
-                    <div className="bg-white/5 md:backdrop-blur-xl p-6 md:p-12 rounded-[50px] border border-white/10 flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="w-full lg:w-1/2 relative flex justify-center py-6 bg-black/20 rounded-[30px]">
-                            <div className="relative w-[280px] h-[420px] md:w-[340px] md:h-[510px]">
-                                <img src="lankaa.png" className="w-full h-full object-contain opacity-60" alt="Map" />
-                                {hotspots.map((spot) => (
-                                    <motion.button 
-                                        key={spot.id} 
-                                        onClick={() => setActiveSpot(spot)} 
-                                        whileHover={{ scale: 1.2 }}
-                                        className="absolute group transform -translate-x-1/2 -translate-y-1/2 z-30" 
-                                        style={{ top: spot.top, left: spot.left }}
-                                    >
-                                        <MapPin 
-                                            className={`transition-all duration-300 ${activeSpot.id === spot.id ? 'text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'text-red-400/50'}`} 
-                                            size={activeSpot.id === spot.id ? 36 : 24} 
-                                            fill={activeSpot.id === spot.id ? "currentColor" : "none"} 
-                                        />
-                                    </motion.button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="w-full lg:w-1/2">
-                            <AnimatePresence mode="wait">
-                                <motion.div key={activeSpot.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-6">
-                                    <div className="flex items-center gap-3 text-gold/60 text-xs font-black uppercase tracking-widest">
-                                      <CloudSun size={16} /> {activeSpot.climate}
-                                    </div>
-                                    <h3 className="text-5xl font-bold text-white uppercase font-['Playfair_Display']">{activeSpot.name}</h3>
-                                    <p className="text-white/60 text-lg font-light leading-relaxed">{activeSpot.description}</p>
-                                    <div className="bg-gold/10 p-5 rounded-2xl border border-gold/20">
-                                        <p className="text-gold font-bold text-[10px] tracking-widest uppercase mb-2">Must Experience</p>
-                                        <p className="text-white/80 text-sm">{activeSpot.activities}</p>
-                                    </div>
-                                    <button onClick={() => document.getElementById('tours').scrollIntoView({ behavior: 'smooth' })} className="bg-white text-[#021f14] px-8 py-4 rounded-xl font-black flex items-center gap-3 hover:bg-gold transition-all text-sm">
-                                        EXPLORE PACKAGES <ArrowRight size={18} />
-                                    </button>
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
+              <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+                <div className="w-full lg:w-1/2">
+                  <FadeInSection>
+                    <div className="rounded-[40px] overflow-hidden shadow-2xl border border-black/5 group">
+                      <img src="kandy.jpeg" alt="About" className="w-full h-[400px] md:h-[600px] object-cover transition-transform duration-700 group-hover:scale-105" />
                     </div>
+                  </FadeInSection>
                 </div>
+                <div className="w-full lg:w-1/2 space-y-6">
+                  <FadeInSection delay={0.2}>
+                    <h2 className="text-5xl md:text-6xl font-bold text-[#021f14] leading-[1.1] font-['Playfair_Display']">The Spirit of <span className="text-emerald-700 italic">Kandy</span></h2>
+                    <p className="text-[#021f14]/80 leading-relaxed text-lg">
+                      <span className="text-gold font-extrabold">Amayo Tours</span> connects you to the soul of the island. We provide more than just transport—we provide memories, guiding you to secret turquoise bays and mist-covered tea hills.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 border-t border-slate-100 pt-8">
+                      <StatBlockDark value="100%" label="Local" />
+                      <StatBlockDark value="24/7" label="Support" />
+                      <StatBlockDark value="5.0" label="Rating" />
+                    </div>
+                  </FadeInSection>
+                </div>
+              </div>
             </section>
 
-            {/* MARQUEE */}
-            <div className="bg-gold py-4 overflow-hidden flex whitespace-nowrap relative z-30">
-              <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ ease: "linear", duration: 20, repeat: Infinity }} className="flex gap-16 items-center">
-                {[...Array(8)].map((_, i) => (
-                  <span key={i} className="text-[#021f14] font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-4">
-                    <Star size={12} fill="currentColor"/> AIRPORT TRANSFERS 24/7 <Star size={12} fill="currentColor"/>
-                  </span>
-                ))}
-              </motion.div>
-            </div>
+            {/* ENHANCED MAP SECTION */}
+            <section id="map" className="py-24 px-6 relative z-10 bg-[#01140d]">
+              <div className="max-w-7xl mx-auto">
+                <FadeInSection>
+                  <div className="text-center mb-16">
+                    <span className="text-gold font-bold tracking-[0.4em] text-[10px] uppercase block mb-2">Interactive Guide</span>
+                    <h2 className="text-5xl font-bold text-white font-['Playfair_Display']">The Jewel of <span className="text-gold italic">The Indian Ocean</span></h2>
+                    <p className="text-white/40 text-sm mt-4 max-w-xl mx-auto italic font-light tracking-wide">Select a destination on the map to uncover its secrets and climate profile.</p>
+                  </div>
+                </FadeInSection>
+
+                <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  
+                  {/* Left Side: The Interactive Map */}
+                  <div className="lg:col-span-7 bg-white/5 backdrop-blur-md p-4 md:p-8 rounded-[40px] border border-white/10 relative overflow-hidden group shadow-2xl">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gold/5 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative w-full aspect-[4/5] md:aspect-square max-h-[600px] flex justify-center items-center">
+                      <img src="lankaa.png" className="w-full h-full object-contain opacity-40 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]" alt="Sri Lanka Map" />
+                      
+                      {hotspots.map((spot) => (
+                        <motion.button 
+                          key={spot.id} 
+                          onClick={() => setActiveSpot(spot)} 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          whileHover={{ scale: 1.3, zIndex: 50 }}
+                          className="absolute group transform -translate-x-1/2 -translate-y-1/2 cursor-pointer" 
+                          style={{ top: spot.top, left: spot.left }}
+                        >
+                          {/* Pulsing Aura */}
+                          <div className={`absolute inset-0 w-full h-full rounded-full transition-all duration-700 animate-ping opacity-20 ${activeSpot.id === spot.id ? 'bg-gold' : 'bg-white'}`} />
+                          
+                          <div className={`relative flex flex-col items-center transition-all duration-500 ${activeSpot.id === spot.id ? 'scale-125' : 'scale-100'}`}>
+                            <MapPin 
+                              className={`transition-all duration-300 ${activeSpot.id === spot.id ? 'text-gold fill-gold drop-shadow-[0_0_15px_rgba(212,175,55,1)]' : 'text-white/40 hover:text-white'}`} 
+                              size={activeSpot.id === spot.id ? 38 : 28} 
+                            />
+                            {/* Label that appears on hover/active */}
+                            <span className={`absolute -bottom-6 whitespace-nowrap text-[8px] font-black uppercase tracking-widest transition-all ${activeSpot.id === spot.id ? 'opacity-100 text-gold' : 'opacity-0 group-hover:opacity-60 text-white'}`}>
+                              {spot.name}
+                            </span>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Right Side: Destination Insight Card */}
+                  <div className="lg:col-span-5 lg:sticky lg:top-32">
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={activeSpot.id} 
+                        initial={{ opacity: 0, x: 30 }} 
+                        animate={{ opacity: 1, x: 0 }} 
+                        exit={{ opacity: 0, x: -30 }}
+                        transition={{ duration: 0.5, ease: "circOut" }}
+                        className="bg-white p-8 md:p-12 rounded-[40px] shadow-2xl relative overflow-hidden"
+                      >
+                        {/* Decorative background element */}
+                        <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12">
+                          <Compass size={200} />
+                        </div>
+
+                        <div className="relative z-10 space-y-8">
+                          <div className="flex justify-between items-start">
+                            <span className="bg-emerald-700/10 text-emerald-800 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                              <MapIcon size={12} /> Landmark
+                            </span>
+                            <div className="text-right">
+                              <div className="flex items-center gap-2 text-[#021f14]/40 text-[10px] font-black uppercase tracking-widest justify-end mb-1">
+                                <Wind size={12} /> Climate
+                              </div>
+                              <p className="text-[#021f14] font-bold text-sm">{activeSpot.climate}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-5xl font-black text-[#021f14] uppercase tracking-tighter font-['Playfair_Display'] leading-none mb-4">
+                              {activeSpot.name}
+                            </h3>
+                            <p className="text-[#021f14]/60 text-lg leading-relaxed font-light">
+                              {activeSpot.description}
+                            </p>
+                          </div>
+
+                          <div className="border-y border-[#021f14]/5 py-6 space-y-4">
+                            <div className="flex items-center gap-4 text-emerald-900">
+                              <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center text-gold">
+                                <Star size={18} fill="currentColor" />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#021f14]/40">Must Experience</p>
+                                <p className="text-sm font-bold text-[#021f14]">{activeSpot.activities}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button 
+                            onClick={() => document.getElementById('tours').scrollIntoView({ behavior: 'smooth' })} 
+                            className="w-full bg-[#021f14] text-white py-6 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gold hover:text-[#021f14] transition-all flex items-center justify-center gap-4 shadow-xl"
+                          >
+                            Explore Available Packages <ArrowRight size={20} />
+                          </button>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                </div>
+              </div>
+            </section>
 
             {/* TOURS SECTION */}
             <section id="tours" className="relative py-24 px-6 overflow-hidden">
@@ -266,275 +350,174 @@ export default function Home() {
               <div className="max-w-7xl mx-auto relative z-10">
                 <FadeInSection>
                   <div className="text-center mb-16">
-                      <h2 className="text-5xl font-bold text-white mb-8 font-['Playfair_Display']">Tour <span className="text-gold italic">Suites</span></h2>
-                      <div className="flex flex-wrap justify-center gap-2">
-                          {["All", "Hill Country", "Beach", "Adventure"].map((cat) => (
-                              <button key={cat} onClick={() => setFilter(cat)} className={`px-6 py-2 rounded-lg font-bold transition-all text-[10px] uppercase tracking-widest ${filter === cat ? "bg-gold text-[#021f14]" : "bg-white/10 text-white/40"}`}>{cat}</button>
-                          ))}
-                      </div>
+                    <h2 className="text-5xl font-bold text-white mb-8 font-['Playfair_Display']">Exclusive <span className="text-gold italic">Journeys</span></h2>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {["All", "Hill Country", "Beach", "Adventure"].map((cat) => (
+                        <button key={cat} onClick={() => setFilter(cat)} className={`px-6 py-2 rounded-lg font-bold transition-all text-[10px] uppercase tracking-widest ${filter === cat ? "bg-gold text-[#021f14]" : "bg-white/10 text-white/40"}`}>{cat}</button>
+                      ))}
+                    </div>
                   </div>
                 </FadeInSection>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   <AnimatePresence mode="popLayout">
                     {allTours.filter(t => filter === "All" || t.category === filter).map((tour) => (
                       <motion.div key={tour.title} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <PackageCard {...tour} />
+                        <PackageCard {...tour} onExplore={() => setSelectedTour(tour)} />
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </div>
               </div>
             </section>
-<div className="h-px w-full bg-transparent relative">
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/30 to-transparent blur-[1px]"></div>
-    {/* Central bright point */}
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-[2px] bg-gold shadow-[0_0_15px_#D4AF37]"></div>
-  </div>
-            
-            {/* REVIEWS SECTION */}
 
-            {/* REVIEWS SECTION */}
-<section 
-  id="reviews" 
-  className="relative py-32 overflow-hidden bg-[#021f14] bg-cover bg-center"
-  style={{ 
-    backgroundImage: `linear-gradient(to bottom, rgba(2, 31, 20, 0.9), rgba(2, 31, 20, 0.9)), url('tiger.jpg')` 
-  }}
->
 
-              <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-                <FadeInSection>
+            {/* DETAIL MODAL */}
+            <AnimatePresence>
+              {selectedTour && (
+                <div className="fixed inset-0 z-[400] flex items-center justify-center p-4 md:p-10">
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    onClick={() => setSelectedTour(null)}
+                    className="absolute inset-0 bg-[#021f14]/90 backdrop-blur-xl cursor-pointer" 
+                  />
+                  <motion.div 
+                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                    className="relative w-full max-w-5xl bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] overflow-y-auto md:overflow-hidden"
+                  >
+                    <button onClick={() => setSelectedTour(null)} className="absolute top-6 right-6 z-50 bg-[#021f14]/10 p-2 rounded-full hover:bg-[#021f14]/20 transition-colors">
+                      <X size={24} className="text-[#021f14]" />
+                    </button>
 
-                  <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-8">
-
-                    <div className="max-w-2xl text-center md:text-left">
-
-                      <span className="text-gold font-bold tracking-[0.3em] text-xs uppercase bg-white/5 border border-white/10 px-4 py-2 rounded-full">Voices of the Island</span>
-
-                      <h2 className="text-6xl md:text-7xl font-bold text-white mt-6 font-['Playfair_Display']">Traveler <span className="text-gold italic">Stories</span></h2>
-
+                    <div className="w-full md:w-1/2 h-[300px] md:h-auto">
+                      <img src={selectedTour.image} alt={selectedTour.title} className="w-full h-full object-cover" />
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
-
-                      <button onClick={() => setShowAllReviews(true)} className="px-8 py-4 rounded-xl border border-gold/50 text-gold font-black hover:bg-gold hover:text-black transition-all text-sm uppercase tracking-widest">SEE ALL REVIEWS</button>
-
-                      <button onClick={() => setShowReviewForm(!showReviewForm)} className="bg-gold text-[#021f14] px-10 py-5 rounded-2xl font-black hover:bg-white transition-all flex items-center gap-3">
-
-                        {showReviewForm ? "VIEW STORIES" : "LEAVE YOUR MARK"} <ArrowRight />
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </FadeInSection>
-
-
-
-                <AnimatePresence>
-
-                  {showReviewForm && (
-
-                    <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="mb-24">
-
-                        <div className="bg-white/10 backdrop-blur-2xl p-8 md:p-16 rounded-[50px] border border-white/20 max-w-4xl mx-auto">
-
-                            <form onSubmit={handleReviewSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                              <div className="space-y-2">
-
-                                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Full Name</label>
-
-                                <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-
-                              </div>
-
-                              <div className="space-y-2">
-
-                                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Origin</label>
-
-                                <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} />
-
-                              </div>
-
-                              <div className="md:col-span-2 space-y-2">
-
-                                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Rate Experience</label>
-
-                                <div className="flex bg-black/20 p-2 rounded-2xl border border-white/10">
-
-                                  {[1, 2, 3, 4, 5].map((star) => (
-
-                                    <button key={star} type="button" onClick={() => setFormData({...formData, rating: star})} className="flex-1 py-3 flex justify-center">
-
-                                      <Star size={24} fill={formData.rating >= star ? "#D4AF37" : "none"} className={formData.rating >= star ? "text-gold" : "text-white/20"} />
-
-                                    </button>
-
-                                  ))}
-
-                                </div>
-
-                              </div>
-
-                              <textarea required className="md:col-span-2 w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none h-40 resize-none" value={formData.text} onChange={(e) => setFormData({...formData, text: e.target.value})}></textarea>
-
-                              <button disabled={isSubmitting} type="submit" className="md:col-span-2 bg-gold text-[#021f14] p-6 rounded-2xl font-black text-lg hover:bg-white disabled:opacity-50">
-
-                                {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : "PUBLISH MY STORY"}
-
-                              </button>
-
-                            </form>
-
-                        </div>
-
-                    </motion.div>
-
-                  )}
-
-                </AnimatePresence>
-
-
-
-                <div className="relative group">
-
-                  <button onClick={() => scroll('left')} className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronLeft size={32} /></button>
-
-                  <button onClick={() => scroll('right')} className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronRight size={32} /></button>
-
-                  <div ref={scrollContainerRef} className="flex overflow-x-auto gap-8 pb-12 no-scrollbar snap-x snap-mandatory">
-
-                    {reviews.map((rev) => (
-
-                      <div key={rev.id} className="min-w-[300px] md:min-w-[400px] snap-center">
-
-                        <ReviewCard {...rev} />
-
+                    <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center bg-white">
+                      <span className="text-emerald-700 font-bold uppercase tracking-[0.3em] text-[10px] mb-4 block">{selectedTour.category}</span>
+                      <h2 className="text-4xl md:text-5xl font-bold text-[#021f14] font-['Playfair_Display'] mb-6 leading-tight">{selectedTour.title}</h2>
+                      <p className="text-[#021f14]/70 text-lg leading-relaxed mb-8">{selectedTour.fullDetails}</p>
+                      
+                      <div className="space-y-4 mb-10">
+                         <p className="font-black text-[10px] uppercase tracking-widest text-[#021f14]">Key Highlights</p>
+                         <div className="flex flex-wrap gap-2">
+                           {selectedTour.highlights.map(h => (
+                             <span key={h} className="bg-emerald-50 text-emerald-800 text-[10px] px-3 py-1.5 rounded-full font-bold">{h}</span>
+                           ))}
+                         </div>
                       </div>
 
-                    ))}
-
-                  </div>
-
+                      <a 
+                        href={`https://wa.me/94777472445?text=Hi! I am interested in the ${selectedTour.title} journey.`}
+                        target="_blank"
+                        className="bg-gold text-black text-center py-5 rounded-2xl font-black text-sm tracking-widest uppercase hover:bg-[#021f14] hover:text-white transition-all shadow-xl"
+                      >
+                        Enquire Now via WhatsApp
+                      </a>
+                    </div>
+                  </motion.div>
                 </div>
-
-              </div>
-
-            </section>
-
-
-
-            {/* FULL REVIEWS MODAL */}
-
-            <AnimatePresence>
-
-              {showAllReviews && (
-
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[300] bg-[#021f14] overflow-y-auto px-6 py-20">
-
-                  <button onClick={() => setShowAllReviews(false)} className="fixed top-8 right-8 text-gold bg-white/5 p-4 rounded-full border border-white/10 hover:bg-gold hover:text-black z-[310]"><X size={32} /></button>
-
-                  <div className="max-w-7xl mx-auto">
-
-                    <div className="text-center mb-20">
-
-                      <h2 className="text-6xl font-bold text-white font-['Playfair_Display']">The Full <span className="text-gold italic">Collection</span></h2>
-
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-                      {reviews.map((rev) => <ReviewCard key={rev.id} {...rev} />)}
-
-                    </div>
-
-                  </div>
-
-                </motion.div>
-
               )}
-
             </AnimatePresence>
 
+            {/* REVIEWS SECTION */}
+            <section id="reviews" className="relative py-32 overflow-hidden bg-[#021f14] bg-cover bg-center" style={{ backgroundImage: `linear-gradient(to bottom, rgba(2, 31, 20, 0.9), rgba(2, 31, 20, 0.9)), url('tiger.jpg')` }}>
+              <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <FadeInSection>
+                  <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-8">
+                    <div className="max-w-2xl text-center md:text-left">
+                      <span className="text-gold font-bold tracking-[0.3em] text-xs uppercase bg-white/5 border border-white/10 px-4 py-2 rounded-full">Voices of the Island</span>
+                      <h2 className="text-6xl md:text-7xl font-bold text-white mt-6 font-['Playfair_Display']">Traveler <span className="text-gold italic">Stories</span></h2>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <button onClick={() => setShowAllReviews(true)} className="px-8 py-4 rounded-xl border border-gold/50 text-gold font-black hover:bg-gold hover:text-black transition-all text-sm uppercase tracking-widest">SEE ALL REVIEWS</button>
+                      <button onClick={() => setShowReviewForm(!showReviewForm)} className="bg-gold text-[#021f14] px-10 py-5 rounded-2xl font-black hover:bg-white transition-all flex items-center gap-3">
+                        {showReviewForm ? "VIEW STORIES" : "LEAVE YOUR MARK"} <ArrowRight />
+                      </button>
+                    </div>
+                  </div>
+                </FadeInSection>
 
+                <AnimatePresence>
+                  {showReviewForm && (
+                    <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="mb-24">
+                      <div className="bg-white/10 backdrop-blur-2xl p-8 md:p-16 rounded-[50px] border border-white/20 max-w-4xl mx-auto">
+                        <form onSubmit={handleReviewSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="space-y-2">
+                            <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Full Name</label>
+                            <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Origin</label>
+                            <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} />
+                          </div>
+                          <div className="md:col-span-2 space-y-2">
+                            <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Rate Experience</label>
+                            <div className="flex bg-black/20 p-2 rounded-2xl border border-white/10">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button key={star} type="button" onClick={() => setFormData({...formData, rating: star})} className="flex-1 py-3 flex justify-center">
+                                  <Star size={24} fill={formData.rating >= star ? "#D4AF37" : "none"} className={formData.rating >= star ? "text-gold" : "text-white/20"} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <textarea required className="md:col-span-2 w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none h-40 resize-none" value={formData.text} onChange={(e) => setFormData({...formData, text: e.target.value})}></textarea>
+                          <button disabled={isSubmitting} type="submit" className="md:col-span-2 bg-gold text-[#021f14] p-6 rounded-2xl font-black text-lg hover:bg-white disabled:opacity-50">
+                            {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : "PUBLISH MY STORY"}
+                          </button>
+                        </form>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-            {/* BOTTOM BOOKING MARQUEE */}
-
-            <div className="bg-white py-6 overflow-hidden flex whitespace-nowrap relative z-30">
-
-              <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ ease: "linear", duration: 25, repeat: Infinity }} className="flex gap-20 items-center">
-
-                {[...Array(12)].map((_, i) => (
-
-                  <span key={i} className="text-[#021f14] font-black uppercase tracking-[0.4em] text-xs flex items-center gap-6">
-
-                    <Star size={16} fill="currentColor"/> WANNA BOOK YOUR NEXT ADVENTURE? DON'T WAIT BOOK NOW! <Star size={16} fill="currentColor"/>
-
-                  </span>
-
-                ))}
-
-              </motion.div>
-
-            </div>
-
-
+                <div className="relative group">
+                  <button onClick={() => scroll('left')} className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronLeft size={32} /></button>
+                  <button onClick={() => scroll('right')} className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronRight size={32} /></button>
+                  <div ref={scrollContainerRef} className="flex overflow-x-auto gap-8 pb-12 no-scrollbar snap-x snap-mandatory">
+                    {reviews.map((rev) => (
+                      <div key={rev.id} className="min-w-[300px] md:min-w-[400px] snap-center">
+                        <ReviewCard {...rev} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* CONTACT SECTION */}
-
             <section id="contact" className="py-32 relative px-6 bg-[#021f14]">
-
               <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
-
                 <div className="lg:w-1/2 space-y-10">
-
                   <FadeInSection>
-
                     <h2 className="text-6xl font-bold text-white font-['Playfair_Display']">Start Your <br/><span className="text-gold italic">Expedition.</span></h2>
-
                     <div className="space-y-6 text-white/70 mt-10">
-
                       <div className="flex gap-5 items-center">
-
                         <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-gold"><MapPin/></div>
-
                         <p>No: 10 Dharmaraja Mawatha, Kandy</p>
-
                       </div>
-
                       <div className="flex gap-5 items-center">
-
                         <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-gold"><Phone/></div>
-
                         <p>+94 777 472 445</p>
-
                       </div>
-
                     </div>
-
                     <a href="https://wa.me/94777472445" className="inline-flex items-center gap-4 bg-[#25D366] text-white px-12 py-5 rounded-2xl font-black text-lg shadow-2xl hover:scale-105 transition-all mt-10">
-
                       <MessageCircle size={28} /> WHATSAPP CHAT
-
                     </a>
-
                   </FadeInSection>
-
                 </div>
-
                 <div className="lg:w-1/2 w-full h-[500px] rounded-[40px] overflow-hidden border border-white/10">
-
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.514309322244!2d80.64332937588665!3d7.295988513725515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3662de3666d6d%3A0x6b1070e635741632!2sDharmaraja%20Mawatha%2C%20Kandy!5e0!3m2!1sen!2slk!4v1714151234567!5m2!1sen!2slk" width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) invert(0.9) contrast(1.2)' }} allowFullScreen="" loading="lazy"></iframe>
-
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.653457193649!2d80.6406!3d7.2914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwMTcnMjkuMCJOIDgwwrAzOCcyNi4yIkU!5e0!3m2!1sen!2slk!4v1714000000000!5m2!1sen!2slk" width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) invert(0.9) contrast(1.2)' }} allowFullScreen="" loading="lazy"></iframe>
                 </div>
-
               </div>
-
             </section>
+
+            {/* FOOTER SECTION */}
+            <Footer />
 
             {/* Floating WhatsApp */}
             <motion.a href="https://wa.me/94777472445" target="_blank" whileHover={{ scale: 1.1 }} className="fixed bottom-6 right-6 z-[100] w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl">
@@ -554,6 +537,77 @@ export default function Home() {
 }
 
 // --- Helper Components ---
+
+function Footer() {
+  const currentYear = new Date().getFullYear();
+  return (
+    <footer className="bg-[#01140d] text-white pt-20 pb-10 border-t border-white/5 relative z-20">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div className="space-y-6">
+            <h3 className="text-2xl font-bold font-['Playfair_Display'] tracking-tight">
+              AMAYO<span className="text-gold italic">TOURS</span>
+            </h3>
+            <p className="text-white/50 text-sm leading-relaxed max-w-xs">
+              Crafting bespoke journeys through the heart of Sri Lanka. From misty highlands to golden shores, we are your local gateway to paradise.
+            </p>
+            
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="text-gold text-[10px] font-black uppercase tracking-[0.3em]">Navigate</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="#about" className="hover:text-gold transition-colors">The Spirit</a></li>
+              <li><a href="#map" className="hover:text-gold transition-colors">Waypoints</a></li>
+              <li><a href="#tours" className="hover:text-gold transition-colors">Exclusive Journeys</a></li>
+              <li><a href="#reviews" className="hover:text-gold transition-colors">Traveler Stories</a></li>
+              <li><a href="#contact" className="hover:text-gold transition-colors">Contact</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="text-gold text-[10px] font-black uppercase tracking-[0.3em]">Services</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="#" className="hover:text-gold transition-colors">Private Transfers</a></li>
+              <li><a href="#" className="hover:text-gold transition-colors">Guided Tours</a></li>
+              <li><a href="#" className="hover:text-gold transition-colors">Hotel Bookings</a></li>
+              <li><a href="#" className="hover:text-gold transition-colors">Custom Itineraries</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="text-gold text-[10px] font-black uppercase tracking-[0.3em]">Newsletter</h4>
+            <p className="text-white/50 text-xs leading-relaxed">
+              Subscribe to receive curated itineraries and exclusive travel offers.
+            </p>
+            <form className="relative" onSubmit={(e) => e.preventDefault()}>
+              <input 
+                type="email" 
+                placeholder="Email address" 
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-5 pr-12 text-sm focus:border-gold outline-none transition-all"
+              />
+              <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gold rounded-lg flex items-center justify-center text-[#021f14] hover:bg-white transition-colors">
+                <Send size={16} />
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase text-center md:text-left">
+            © {currentYear} AMAYO TOURS SRI LANKA. ALL RIGHTS RESERVED.
+          </p>
+          <div className="flex items-center gap-2 group">
+            <span className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase">Built by</span>
+            <span className="text-gold text-[10px] font-black tracking-[0.2em] uppercase group-hover:text-white transition-colors duration-500">
+              AmashaS
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
 
 function SlantedFrame({ image, label, delay }) {
   return (
