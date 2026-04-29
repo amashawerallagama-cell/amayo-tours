@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import { 
   Mail, 
   MapPin, 
@@ -9,8 +10,8 @@ import {
   Send,
   Plus,
   Minus,
-  ArrowRight,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
@@ -20,21 +21,24 @@ const ContactInfo = [
     title: "WhatsApp & Mobile",
     detail: "+94 77 747 2445",
     subtext: "Instant support available 24/7",
-    color: "bg-emerald-50"
+    color: "bg-emerald-50",
+    link: "https://wa.me/94777472445"
   },
   {
     icon: <Mail className="text-gold" size={28} />,
     title: "Email Address",
     detail: "info@amayotours.com",
     subtext: "Get a custom quote via email",
-    color: "bg-orange-50"
+    color: "bg-orange-50",
+    link: "mailto:info@amayotours.com"
   },
   {
     icon: <Globe className="text-blue-700" size={28} />,
     title: "We Speak",
     detail: "English, Sinhalese, Tamil",
     subtext: "Native communication",
-    color: "bg-blue-50"
+    color: "bg-blue-50",
+    link: null
   }
 ];
 
@@ -55,6 +59,31 @@ const faqs = [
 
 export default function ContactPage() {
   const [activeFaq, setActiveFaq] = useState(null);
+  const formRef = useRef();
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState(""); // "SUCCESS" | "ERROR" | ""
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setIsSending(true);
+
+    // Replace these with your actual EmailJS IDs
+    const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+  const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+  const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .then(() => {
+        setStatus("SUCCESS");
+        setIsSending(false);
+        formRef.current.reset();
+        setTimeout(() => setStatus(""), 5000);
+      }, (error) => {
+        console.error(error.text);
+        setStatus("ERROR");
+        setIsSending(false);
+      });
+  };
 
   return (
     <main className="bg-[#f8f9fa] min-h-screen font-sans">
@@ -101,7 +130,11 @@ export default function ContactPage() {
                 {item.icon}
               </div>
               <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-2">{item.title}</h3>
-              <p className="text-xl font-bold text-[#021f14] mb-1">{item.detail}</p>
+              {item.link ? (
+                <a href={item.link} className="text-xl font-bold text-[#021f14] mb-1 hover:text-gold transition-colors">{item.detail}</a>
+              ) : (
+                <p className="text-xl font-bold text-[#021f14] mb-1">{item.detail}</p>
+              )}
               <p className="text-sm text-gray-500">{item.subtext}</p>
             </motion.div>
           ))}
@@ -118,21 +151,25 @@ export default function ContactPage() {
             <p className="text-gray-500">Fill out the form below and receive a personalized itinerary within 24 hours.</p>
           </div>
 
-          <form className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm border border-gray-100 space-y-6">
+          <form 
+            ref={formRef}
+            onSubmit={sendEmail}
+            className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm border border-gray-100 space-y-6"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-700 ml-1">Your Name</label>
-                <input type="text" placeholder="e.g. David Miller" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all" />
+                <input name="user_name" required type="text" placeholder="e.g. David Miller" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-700 ml-1">Email Address</label>
-                <input type="email" placeholder="david@example.com" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all" />
+                <input name="user_email" required type="email" placeholder="david@example.com" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all" />
               </div>
             </div>
             
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-700 ml-1">Subject</label>
-              <select className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all appearance-none">
+              <select name="subject" className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white transition-all appearance-none">
                 <option>General Inquiry</option>
                 <option>Custom 7-Day Tour</option>
                 <option>14-Day Exclusive Package</option>
@@ -142,12 +179,27 @@ export default function ContactPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-700 ml-1">Message</label>
-              <textarea placeholder="Tell us about your group size and preferred dates..." className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white h-40 resize-none transition-all"></textarea>
+              <textarea name="message" required placeholder="Tell us about your group size and preferred dates..." className="w-full bg-gray-50 border border-gray-200 p-4 rounded-xl outline-none focus:border-gold focus:bg-white h-40 resize-none transition-all"></textarea>
             </div>
             
-            <button type="button" className="w-full py-5 bg-[#021f14] text-white rounded-xl font-bold text-sm tracking-widest flex items-center justify-center gap-3 hover:bg-emerald-900 transition-all shadow-lg shadow-emerald-900/20">
-              SEND MESSAGE <Send size={18} className="text-gold" />
+            <button 
+              type="submit" 
+              disabled={isSending}
+              className="w-full py-5 bg-[#021f14] text-white rounded-xl font-bold text-sm tracking-widest flex items-center justify-center gap-3 hover:bg-emerald-900 transition-all shadow-lg shadow-emerald-900/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSending ? (
+                <>SENDING... <Loader2 className="animate-spin" size={18} /></>
+              ) : (
+                <>SEND MESSAGE <Send size={18} className="text-gold" /></>
+              )}
             </button>
+
+            {status === "SUCCESS" && (
+              <p className="text-center text-emerald-600 font-bold text-sm mt-4">Message sent successfully! We will get back to you soon.</p>
+            )}
+            {status === "ERROR" && (
+              <p className="text-center text-red-500 font-bold text-sm mt-4">Oops! Something went wrong. Please try again later.</p>
+            )}
           </form>
         </div>
 
@@ -194,9 +246,14 @@ export default function ContactPage() {
                 Visit us for a tea and a chat about your plans.<br />
                 Negombo / Kandy, Sri Lanka.
               </p>
-              <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full text-xs font-bold tracking-widest transition-all">
+              <a 
+                href="https://maps.google.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full text-xs font-bold tracking-widest transition-all"
+              >
                 VIEW ON GOOGLE MAPS <ExternalLink size={14} />
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -268,7 +325,7 @@ function Footer() {
           <div className="flex items-center gap-2 group">
             <span className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase">Built by</span>
             <span className="text-gold text-[10px] font-black tracking-[0.2em] uppercase group-hover:text-white transition-colors duration-500">
-                Amasha
+              Amasha
             </span>
           </div>
         </div>

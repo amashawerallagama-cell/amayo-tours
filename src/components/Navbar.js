@@ -76,7 +76,7 @@ export default function Navbar() {
           <Link href="/packages" onClick={closeMenu} className="text-gold">Tour Packages</Link>
 
           <Link href="/about" onClick={closeMenu} className="text-gold">About Us</Link>
-          <Link href="/#reviews" onClick={closeMenu}>Reviews</Link>
+          
           
           <Link href="/contact" onClick={closeMenu} className="text-gold">Contact</Link>
           

@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import { 
   MapPin, 
   CheckCircle2, 
@@ -9,7 +10,8 @@ import {
   Sparkles,
   Compass,
   X,
-  Send
+  Send,
+  Loader2
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
@@ -137,11 +139,38 @@ const tourPackages = [
 export default function PackagesPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeItinerary, setActiveItinerary] = useState(null);
+  
+  // Email Logic State
+  const formRef = useRef();
+  const [isSending, setIsSending] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(""); // "SUCCESS" | "ERROR" | ""
+
   const categories = ["All", "Standard", "Exclusive", "History", "Beach", "Hill Country"];
 
   const filteredPackages = selectedCategory === "All" 
     ? tourPackages 
     : tourPackages.filter(p => p.category === selectedCategory);
+
+  const handleCustomQuote = (e) => {
+    e.preventDefault();
+    setIsSending(true);
+
+    // Replace these strings with your actual EmailJS IDs
+    const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+  const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+  const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .then(() => {
+        setEmailStatus("SUCCESS");
+        setIsSending(false);
+        formRef.current.reset();
+        setTimeout(() => setEmailStatus(""), 5000);
+      }, (error) => {
+        console.error("FAILED...", error.text);
+        setEmailStatus("ERROR");
+        setIsSending(false);
+      });
+  };
 
   return (
     <main className="bg-[#fcfcf9] min-h-screen">
@@ -298,7 +327,7 @@ export default function PackagesPage() {
       </AnimatePresence>
 
       {/* Manual Inquiry Section */}
-      <section className="py-24 bg-[#021f14] relative overflow-hidden">
+      <section id="custom-quote" className="py-24 bg-[#021f14] relative overflow-hidden">
         <div className="absolute bottom-0 right-0 opacity-10 pointer-events-none">
           <Compass size={400} className="text-white" />
         </div>
@@ -309,35 +338,58 @@ export default function PackagesPage() {
             <p className="text-white/60 text-lg">Not finding exactly what you need? Tell us your dream destinations and we will build a custom manual tour just for you.</p>
           </div>
 
-          <form className="bg-white/5 backdrop-blur-xl p-8 md:p-12 rounded-[40px] border border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form 
+            ref={formRef}
+            onSubmit={handleCustomQuote}
+            className="bg-white/5 backdrop-blur-xl p-8 md:p-12 rounded-[40px] border border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Full Name</label>
-              <input type="text" placeholder="John Doe" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
+              <input name="user_name" required type="text" placeholder="John Doe" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
             </div>
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Preferred Destinations</label>
-              <input type="text" placeholder="e.g. Kandy, Ella, Galle" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
+              <input name="destinations" required type="text" placeholder="e.g. Kandy, Ella, Galle" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
             </div>
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Number of Travelers</label>
-              <select className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold appearance-none">
-                <option className="bg-[#021f14]">2 Persons</option>
-                <option className="bg-[#021f14]">3-5 Persons</option>
-                <option className="bg-[#021f14]">Large Group</option>
+              <select name="travelers" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold appearance-none">
+                <option value="2 Persons" className="bg-[#021f14]">2 Persons</option>
+                <option value="3-5 Persons" className="bg-[#021f14]">3-5 Persons</option>
+                <option value="Large Group" className="bg-[#021f14]">Large Group</option>
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Approx. Duration</label>
-              <input type="text" placeholder="e.g. 10 Days" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
+              <input name="duration" type="text" placeholder="e.g. 10 Days" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
             </div>
             <div className="md:col-span-2 space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Special Requirements</label>
-              <textarea placeholder="Tell us about your interests..." className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold h-32 resize-none transition-all"></textarea>
+              <textarea name="message" placeholder="Tell us about your interests..." className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold h-32 resize-none transition-all"></textarea>
             </div>
             
-            <button className="md:col-span-2 w-full py-6 bg-gold text-black rounded-2xl font-black text-sm tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl">
-              REQUEST CUSTOM QUOTE <MessageSquare size={20} />
+            <button 
+              disabled={isSending}
+              type="submit"
+              className="md:col-span-2 w-full py-6 bg-gold text-black rounded-2xl font-black text-sm tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSending ? (
+                <>SENDING... <Loader2 className="animate-spin" size={20} /></>
+              ) : (
+                <>REQUEST CUSTOM QUOTE <MessageSquare size={20} /></>
+              )}
             </button>
+
+            {emailStatus === "SUCCESS" && (
+              <p className="md:col-span-2 text-center text-emerald-400 font-bold text-sm mt-4">
+                Thank you! Your inquiry has been sent successfully.
+              </p>
+            )}
+            {emailStatus === "ERROR" && (
+              <p className="md:col-span-2 text-center text-red-400 font-bold text-sm mt-4">
+                Something went wrong. Please try again or contact us via WhatsApp.
+              </p>
+            )}
           </form>
         </div>
       </section>
