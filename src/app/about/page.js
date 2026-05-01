@@ -3,24 +3,23 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
-  Award, 
-  Heart, 
-  Map, 
+  History,
+  ShieldCheck,
+  Map,
   MapPin, 
   CheckCircle2, 
   Compass,
-  History,
-  ShieldCheck,
   Zap,
   Wallet,
-  Send
+  Send,
+  Heart
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
 const stats = [
   { label: 'Years of Experience', value: '15+', icon: <History className="text-gold" /> },
   { label: 'Happy Travelers', value: '2,000+', icon: <Users className="text-gold" /> },
-  { label: 'Custom Itineraries', value: '500+', icon: <Map className="text-gold" /> },
+  { label: 'Community Members', value: '1,000+', icon: <Heart className="text-gold" /> },
   { label: 'Safety Rating', value: '100%', icon: <ShieldCheck className="text-gold" /> },
 ];
 
@@ -47,13 +46,16 @@ export default function AboutPage() {
     <main className="bg-[#fcfcf9] min-h-screen">
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Hero Section with Slow Zoom-Out */}
       <section className="relative pt-44 pb-32 bg-[#021f14] overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
+          <motion.img 
+            initial={{ scale: 1.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.3 }}
+            transition={{ duration: 3, ease: "easeOut" }}
             src="/images/aboutus.jpg" 
             alt="Sri Lanka Culture" 
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#fcfcf9]" />
         </div>
@@ -179,7 +181,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Integrated Professional Footer */}
       <Footer />
     </main>
   );
@@ -221,20 +222,11 @@ function Footer() {
           </div>
 
           <div className="space-y-6">
-            <h4 className="text-gold text-[10px] font-black uppercase tracking-[0.3em]">Newsletter</h4>
-            <p className="text-white/50 text-xs leading-relaxed">
-              Subscribe to receive curated itineraries and exclusive travel offers.
-            </p>
-            <form className="relative" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Email address" 
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-5 pr-12 text-sm focus:border-gold outline-none transition-all"
-              />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gold rounded-lg flex items-center justify-center text-[#021f14] hover:bg-white transition-colors">
-                <Send size={16} />
-              </button>
-            </form>
+            <h4 className="text-gold text-[10px] font-black uppercase tracking-[0.3em]">Our Digital Presence</h4>
+            <div className="flex flex-col gap-3">
+              <a href="#" className="text-white/50 hover:text-gold transition-colors text-[10px] font-bold uppercase tracking-widest">Amayo Clothing</a>
+              <a href="#" className="text-white/50 hover:text-gold transition-colors text-[10px] font-bold uppercase tracking-widest">Elegant Lady</a>
+            </div>
           </div>
         </div>
 
@@ -242,10 +234,10 @@ function Footer() {
           <p className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase text-center md:text-left">
             © {currentYear} AMAYO TOURS SRI LANKA. ALL RIGHTS RESERVED.
           </p>
-          <div className="flex items-center gap-2 group">
-            <span className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase">Built by</span>
+          <div className="flex flex-col items-center md:items-end gap-1 group">
+            <span className="text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase">Designed & Developed by</span>
             <span className="text-gold text-[10px] font-black tracking-[0.2em] uppercase group-hover:text-white transition-colors duration-500">
-              Amasha
+              Amasha | Business Systems Developer
             </span>
           </div>
         </div>

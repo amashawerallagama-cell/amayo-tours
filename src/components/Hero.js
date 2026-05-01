@@ -33,7 +33,7 @@ export default function Hero() {
         
         <div className="flex flex-col md:flex-row gap-4 justify-center">
           <a 
-            href="#tours" 
+            href="/packages" 
             className="bg-gold text-jungle px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:scale-105 transition-all"
           >
             Explore Packages

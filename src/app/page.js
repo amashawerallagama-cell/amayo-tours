@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { useState, useEffect, useRef } from 'react'; 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, MessageCircle, ArrowRight, Star, Loader2, X, ChevronLeft, ChevronRight, CloudSun, Send, Instagram, Twitter, Compass, Wind, Map as MapIcon,Globe,   } from 'lucide-react'; 
+import { MapPin, Phone, MessageCircle, ArrowRight, Star, Loader2, X, ChevronLeft, ChevronRight, CloudSun, Send, Instagram, Twitter, Compass, Wind, Map as MapIcon,Globe, Quote, } from 'lucide-react'; 
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import PackageCard from '@/components/PackageCard';
@@ -128,6 +128,9 @@ export default function Home() {
   const [reviews, setReviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: '', location: '', text: '', rating: 5 });
+  
+  const containerRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const scrollContainerRef = useRef(null);
 
@@ -159,6 +162,9 @@ export default function Home() {
       setFormData({ name: '', location: '', text: '', rating: 5 });
       setShowReviewForm(false);
     }
+  };
+  const toggleForm = () => {
+    setShowReviewForm((prev) => !prev);
   };
 
   return (
@@ -515,32 +521,15 @@ export default function Home() {
             </AnimatePresence>
 
             {/* REVIEWS SECTION */}
-<section id="reviews" className="relative py-32 overflow-hidden bg-[#021f14]">
-  {/* Background with Overlay */}
-  <div className="absolute inset-0 z-0">
-    <img 
-      src="tiger.jpg" 
-      alt="Sri Lanka Wildlife" 
-      className="w-full h-full object-cover opacity-20"
-    />
-    <div className="absolute inset-0 bg-gradient-to-b from-[#021f14] via-transparent to-[#021f14]" />
-  </div>
-
+<section id="reviews" className="relative py-32 overflow-hidden bg-[#021f14] bg-cover bg-center" style={{ backgroundImage: `linear-gradient(to bottom, rgba(2, 31, 20, 0.9), rgba(2, 31, 20, 0.9)), url('tiger.jpg')` }}>
   <div className="max-w-7xl mx-auto px-6 relative z-10">
     <FadeInSection>
       <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-8">
         <div className="max-w-2xl text-center md:text-left">
-          <span className="text-gold font-bold tracking-[0.3em] text-xs uppercase bg-white/5 border border-white/10 px-4 py-2 rounded-full">
-            Voices of the Island
-          </span>
-          <h2 className="text-6xl md:text-7xl font-bold text-white mt-6 font-['Playfair_Display']">
-            Traveler <span className="text-gold italic">Stories</span>
-          </h2>
+          <span className="text-gold font-bold tracking-[0.3em] text-xs uppercase bg-white/5 border border-white/10 px-4 py-2 rounded-full">Voices of the Island</span>
+          <h2 className="text-6xl md:text-7xl font-bold text-white mt-6 font-['Playfair_Display']">Traveler <span className="text-gold italic">Stories</span></h2>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <button onClick={() => setShowAllReviews(true)} className="px-8 py-4 rounded-xl border border-gold/50 text-gold font-black hover:bg-gold hover:text-black transition-all text-sm uppercase tracking-widest">
-            SEE ALL REVIEWS
-          </button>
           <button onClick={() => setShowReviewForm(!showReviewForm)} className="bg-gold text-[#021f14] px-10 py-5 rounded-2xl font-black hover:bg-white transition-all flex items-center gap-3">
             {showReviewForm ? "VIEW STORIES" : "LEAVE YOUR MARK"} <ArrowRight />
           </button>
@@ -548,48 +537,73 @@ export default function Home() {
       </div>
     </FadeInSection>
 
-    {/* REVIEW FORM SECTION (Keep your existing form logic here) */}
     <AnimatePresence>
       {showReviewForm && (
-         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="mb-24">
-            {/* ... your form content ... */}
-         </motion.div>
+        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="mb-24">
+          <div className="bg-white/10 backdrop-blur-2xl p-8 md:p-16 rounded-[50px] border border-white/20 max-w-4xl mx-auto">
+            <form onSubmit={handleReviewSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Full Name</label>
+                <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Origin</label>
+                <input required type="text" className="w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} />
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Rate Experience</label>
+                <div className="flex bg-black/20 p-2 rounded-2xl border border-white/10">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button key={star} type="button" onClick={() => setFormData({...formData, rating: star})} className="flex-1 py-3 flex justify-center">
+                      <Star size={24} fill={formData.rating >= star ? "#D4AF37" : "none"} className={formData.rating >= star ? "text-gold" : "text-white/20"} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <textarea required className="md:col-span-2 w-full bg-black/20 text-white p-5 rounded-2xl border border-white/10 outline-none h-40 resize-none" value={formData.text} onChange={(e) => setFormData({...formData, text: e.target.value})}></textarea>
+              <button disabled={isSubmitting} type="submit" className="md:col-span-2 bg-gold text-[#021f14] p-6 rounded-2xl font-black text-lg hover:bg-white disabled:opacity-50">
+                {isSubmitting ? <Loader2 className="animate-spin mx-auto" /> : "PUBLISH MY STORY"}
+              </button>
+            </form>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
 
-    {/* AUTO-SCROLLING CARDS CONTAINER */}
-    <div className="relative overflow-hidden">
-      {/* Gradient Fades for the edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#021f14] to-transparent z-20 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#021f14] to-transparent z-20 pointer-events-none" />
-
-      <motion.div 
-        className="flex gap-8 cursor-grab active:cursor-grabbing"
-        animate={{
-          x: [0, -100 * reviews.length], // Adjust speed by changing the duration below
-        }}
-        transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 40, // Increase for slower, smoother motion
-            ease: "linear",
-          },
-        }}
-        style={{ width: "fit-content" }}
-        whileHover={{ animationPlayState: 'paused' }} // Pauses auto-scroll on hover
+    <div className="relative group">
+      <button onClick={() => scroll('left')} className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronLeft size={32} /></button>
+      <button onClick={() => scroll('right')} className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-gold text-[#021f14] p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all hidden md:block"><ChevronRight size={32} /></button>
+      
+      {/* Manual and Auto Scrolling Container */}
+      <div 
+        ref={scrollContainerRef} 
+        className="flex overflow-x-auto gap-8 pb-12 no-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing"
       >
-        {/* Render reviews twice for seamless looping */}
-        {[...reviews, ...reviews].map((rev, idx) => (
-          <div key={`${rev.id}-${idx}`} className="min-w-[350px] md:min-w-[450px]">
-            <ReviewCard {...rev} />
-          </div>
-        ))}
-      </motion.div>
+        <motion.div 
+          className="flex gap-8"
+          style={{ width: "max-content" }}
+          animate={{ x: [0, "-50%"] }}
+          transition={{
+            x: {
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: 50,
+              ease: "linear",
+            },
+          }}
+        >
+          {[...reviews, ...reviews].map((rev, idx) => (
+            <div key={`${rev.id}-${idx}`} className="min-w-[320px] md:min-w-[450px] snap-center">
+              <ReviewCard {...rev} />
+            </div>
+          ))}
+        </motion.div>
+      </div>
     </div>
   </div>
 </section>
 
+            
             {/* CONTACT SECTION */}
             <section id="contact" className="py-32 relative px-6 bg-[#021f14]">
               <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
@@ -752,4 +766,10 @@ function ReviewCard({ name, location, text, rating = 5 }) {
       </div>
     </div>
   );
+
+  {/* Moving this here fixes the Turbopack build error */}
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
 }

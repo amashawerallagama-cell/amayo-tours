@@ -140,10 +140,9 @@ export default function PackagesPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeItinerary, setActiveItinerary] = useState(null);
   
-  // Email Logic State
   const formRef = useRef();
   const [isSending, setIsSending] = useState(false);
-  const [emailStatus, setEmailStatus] = useState(""); // "SUCCESS" | "ERROR" | ""
+  const [emailStatus, setEmailStatus] = useState(""); 
 
   const categories = ["All", "Standard", "Exclusive", "History", "Beach", "Hill Country"];
 
@@ -155,18 +154,25 @@ export default function PackagesPage() {
     e.preventDefault();
     setIsSending(true);
 
-    // Replace these strings with your actual EmailJS IDs
     const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-  const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-  const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+    const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      console.error("EmailJS environment variables are missing!");
+      setEmailStatus("ERROR");
+      setIsSending(false);
+      return;
+    }
+
     emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
-      .then(() => {
+      .then((result) => {
         setEmailStatus("SUCCESS");
         setIsSending(false);
         formRef.current.reset();
         setTimeout(() => setEmailStatus(""), 5000);
-      }, (error) => {
-        console.error("FAILED...", error.text);
+      })
+      .catch((error) => {
         setEmailStatus("ERROR");
         setIsSending(false);
       });
@@ -176,36 +182,68 @@ export default function PackagesPage() {
     <main className="bg-[#fcfcf9] min-h-screen">
       <Navbar />
       
-      {/* Hero Header */}
+      {/* Hero Header with Zoom-Out Animation */}
       <section className="relative pt-44 pb-32 bg-[#021f14] text-white overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
-            src="/images/Slanka.jpg" 
+          <motion.img 
+            initial={{ scale: 1.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.4 }}
+            transition={{ 
+              duration: 2.5, 
+              ease: "easeOut" 
+            }}
+            src="/images/IMG_9863.JPG.jpeg" 
             alt="Sri Lanka Landscape" 
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#021f14]/80 via-[#021f14]/60 to-[#fcfcf9]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ 
+              duration: 1, 
+              ease: [0.16, 1, 0.3, 1],
+              staggerChildren: 0.1 
+            }}
           >
-            <span className="text-gold font-bold tracking-[0.4em] uppercase text-xs mb-4 block">
+            <motion.span 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-gold font-bold tracking-[0.4em] uppercase text-xs mb-4 block"
+            >
               Curated Experiences
-            </span>
-            <h1 className="text-6xl md:text-8xl font-bold font-['Playfair_Display'] leading-tight">
+            </motion.span>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-6xl md:text-8xl font-bold font-['Playfair_Display'] leading-tight"
+            >
               Tour <span className="italic text-gold">Packages</span>
-            </h1>
-            <p className="max-w-xl text-white/70 mt-6 text-lg leading-relaxed">
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="max-w-xl text-white/70 mt-6 text-lg leading-relaxed"
+            >
               From the ancient ruins of the North to the misty tea trails of the hill country, 
               discover the soul of Sri Lanka with our expertly crafted itineraries.
-            </p>
+            </motion.p>
           </motion.div>
           
-          <div className="flex flex-wrap gap-3 mt-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-wrap gap-3 mt-12"
+          >
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -219,7 +257,7 @@ export default function PackagesPage() {
                 {cat.toUpperCase()}
               </button>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -335,7 +373,7 @@ export default function PackagesPage() {
           <div className="text-center mb-16">
             <Sparkles className="text-gold mx-auto mb-6" size={40} />
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-['Playfair_Display']">Craft Your <span className="text-gold italic">Own Journey</span></h2>
-            <p className="text-white/60 text-lg">Not finding exactly what you need? Tell us your dream destinations and we will build a custom manual tour just for you.</p>
+            <p className="text-white/60 text-lg">Not finding exactly what you need? Tell us your dream destinations and we will build a custom tour just for you.</p>
           </div>
 
           <form 
@@ -345,7 +383,7 @@ export default function PackagesPage() {
           >
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Full Name</label>
-              <input name="user_name" required type="text" placeholder="John Doe" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
+              <input name="from_name" required type="text" placeholder="John Doe" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold transition-all" />
             </div>
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Preferred Destinations</label>
@@ -353,7 +391,7 @@ export default function PackagesPage() {
             </div>
             <div className="space-y-2">
               <label className="text-gold text-[10px] font-black uppercase tracking-widest ml-2">Number of Travelers</label>
-              <select name="travelers" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold appearance-none">
+              <select name="traveler_count" className="w-full bg-white/10 text-white p-5 rounded-2xl border border-white/10 outline-none focus:border-gold appearance-none">
                 <option value="2 Persons" className="bg-[#021f14]">2 Persons</option>
                 <option value="3-5 Persons" className="bg-[#021f14]">3-5 Persons</option>
                 <option value="Large Group" className="bg-[#021f14]">Large Group</option>
@@ -387,14 +425,13 @@ export default function PackagesPage() {
             )}
             {emailStatus === "ERROR" && (
               <p className="md:col-span-2 text-center text-red-400 font-bold text-sm mt-4">
-                Something went wrong. Please try again or contact us via WhatsApp.
+                Something went wrong. Check your console (F12) for details or contact us via WhatsApp.
               </p>
             )}
           </form>
         </div>
       </section>
 
-      {/* FOOTER SECTION */}
       <Footer />
     </main>
   );
